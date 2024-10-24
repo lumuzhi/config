@@ -1,0 +1,137 @@
+{
+    "inbounds": [
+        {
+            "type": "mixed",
+            "listen": "::",
+            "listen_port": 10000
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "hysteria2",
+            "server": "yg-usone.linwanrong.com",
+            "server_port": 44502,
+            "up_mbps": 20,
+            "down_mbps": 100,
+            "password": "e6233b3f-b593-4cd9-a6db-259126cffda1",
+            "tls": {
+                "enabled": true,
+                "server_name": "yg-usone.linwanrong.com",
+                "insecure": false,
+                "alpn": [
+                    "h3"
+                ]
+            }
+        }
+    ]
+}
+
+
+
+{
+    "inbounds": [
+        {
+            "type": "mixed",
+            "listen": "::",
+            "listen_port": 10000
+        }
+    ],
+    "outbounds": [
+        {
+            "type":"tuic",
+            "tag": "tuic5-kr-two",
+            "server": "yg-krtwo.linwanrong.com",
+            "server_port": 44503,
+            "uuid": "fe7fc349-4276-4228-a220-43765512be38",
+            "password": "fe7fc349-4276-4228-a220-43765512be38",
+            "congestion_control": "bbr",
+            "udp_relay_mode": "native",
+            "udp_over_stream": false,
+            "zero_rtt_handshake": false,
+            "heartbeat": "10s",
+            "tls":{
+                "enabled": true,
+                "server_name": "yg-krtwo.linwanrong.com",
+                "insecure": false,
+                "alpn": [
+                    "h3"
+                ]
+            }
+        }
+    ]
+}
+
+
+{
+    "inbounds": [
+        {
+            "type": "mixed",
+            "listen": "::",
+            "listen_port": 10000
+        }
+    ],
+    "outbounds": [
+        {
+          "type": "vless",
+          "tag": "vless-kr-two",
+          "server": "146.56.117.255",
+          "server_port": 44500,
+          "uuid": "fe7fc349-4276-4228-a220-43765512be38",
+          "packet_encoding": "xudp",
+          "flow": "xtls-rprx-vision",
+          "tls": {
+            "enabled": true,
+            "server_name": "www.yahoo.com",
+            "utls": {
+              "enabled": true,
+              "fingerprint": "chrome"
+            },
+          "reality": {
+              "enabled": true,
+              "public_key": "dNvcRjdePF-LUhv7wxD_04K_J4isa1a-EQUh2GojjHA",
+              "short_id": "cc581b84"
+            }
+          }
+        }
+    ]
+}
+
+
+{
+    "inbounds": [
+        {
+            "type": "mixed",
+            "listen": "::",
+            "listen_port": 10000
+        }
+    ],
+    "outbounds": [
+        {
+            "server": "yg-krtwo.linwanrong.com",
+            "server_port": 44501,
+            "tag": "vmess-kr-two",
+            "tls": {
+                "enabled": true,
+                "server_name": "yg-krtwo.linwanrong.com",
+                "insecure": false,
+                "utls": {
+                    "enabled": true,
+                    "fingerprint": "chrome"
+                }
+            },
+            "packet_encoding": "packetaddr",
+            "transport": {
+                "headers": {
+                    "Host": [
+                        "yg-krtwo.linwanrong.com"
+                    ]
+                },
+                "path": "fe7fc349-4276-4228-a220-43765512be38-vm",
+                "type": "ws"
+            },
+            "type": "vmess",
+            "security": "auto",
+            "uuid": "fe7fc349-4276-4228-a220-43765512be38"
+        }
+    ]
+}
