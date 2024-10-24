@@ -56,14 +56,35 @@ else
     bbr="Openvz/Lxc"
 fi
 hostname=$(hostname)
+country=$(curl -s ipinfo.io/json)
 
 
 
 
 setshortcut() {
+  if [ "$country" = "CN" ]; then
+    url="https://gh.kejilion.pro/https://raw.githubusercontent.com/lumuzhi/config/main/linwanrong.sh"
+  else
+    url="https://raw.githubusercontent.com/lumuzhi/config/main/linwanrong.sh"
+  fi
+
   rm -rf /usr/bin/linwanrong
-  curl -L -o /usr/bin/linwanrong -# --retry 2 --insecure https://raw.githubusercontent.com/lumuzhi/config/main/linwanrong.sh  
+  curl -L -o /usr/bin/linwanrong --retry 2 --insecure $url
   chmod +x /usr/bin/linwanrong
+  exit
+}
+
+update() {
+  if [ "$country" = "CN" ]; then
+    url="https://gh.kejilion.pro/https://raw.githubusercontent.com/lumuzhi/config/main/linwanrong.sh"
+  else
+    url="https://raw.githubusercontent.com/lumuzhi/config/main/linwanrong.sh"
+  fi
+
+  rm -rf /usr/bin/linwanrong
+  curl -L -o /usr/bin/linwanrong -# --retry 2 --insecure $url
+  chmod +x /usr/bin/linwanrong
+  exit
 }
 
 # 参数 singbox on/off
@@ -91,7 +112,6 @@ singbox() {
       ;;
     * )
       red "无效输入"
-
   esac
 }
 
@@ -112,20 +132,22 @@ defaultIptables() {
 }
 main() {
   clear
-  setshortcut
   red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   white "脚本快捷方式：linwanrong"
   white "----------------------------------------------------------------------------------"
-  green " 1. singbox"
-  green " 2. 配置默认iptables"
+  green " 01. singbox"
+  green " 02. 配置默认iptables"
+
   white "----------------------------------------------------------------------------------"
+  green " 00. update"
   green " 0. exit"
   red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
   readp "输入数字：" Input
   case "$Input" in
-    1 ) singbox ;;
-    2 ) defaultIptables ;;
+    01 ) singbox ;;
+    02 ) defaultIptables ;;
+    00 ) update ;;
     0 ) exit ;;
     * ) red "无效输入"
   esac
