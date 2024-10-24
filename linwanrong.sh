@@ -56,8 +56,8 @@ else
     bbr="Openvz/Lxc"
 fi
 hostname=$(hostname)
-# country=$(curl -s ipinfo.io/json)
-country="US"
+country=$(curl -s ipinfo.io/json)
+# country="US"
 
 
 
