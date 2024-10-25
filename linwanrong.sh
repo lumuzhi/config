@@ -118,15 +118,15 @@ singboxport() {
 
 defaultIptables() {
 	iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-  iptables -F
-  iptables -X
-  iptables -t nat -F
-  iptables -t nat -X
-  iptables -t mangle -F
-  iptables -t mangle -X
-  iptables -t raw -F
-  iptables -t raw -X
-  iptables -P INPUT DROP
+	iptables -F
+	iptables -X
+	iptables -t nat -F
+	iptables -t nat -X
+	iptables -t mangle -F
+	iptables -t mangle -X
+	iptables -t raw -F
+	iptables -t raw -X
+	iptables -P INPUT DROP
 	iptables -P OUTPUT ACCEPT
 	iptables -P FORWARD DROP
 	iptables -A INPUT -p tcp --dport 22 -j ACCEPT
@@ -134,6 +134,7 @@ defaultIptables() {
 	iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 	iptables -A INPUT -p icmp -j ACCEPT
 	iptables -A INPUT -i lo -j ACCEPT
+ 	apt install netfilter-persistent
 	netfilter-persistent save
 	red "开启默认端口信息"
 	iptables -L
