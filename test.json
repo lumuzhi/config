@@ -153,7 +153,6 @@
             "security": "auto",
             "uuid": "fe7fc349-4276-4228-a220-43765512be38"
         },
-
     {
         "type": "hysteria2",
         "tag": "hy2-kr-two",
@@ -441,7 +440,6 @@
             "security": "auto",
             "uuid": "e6233b3f-b593-4cd9-a6db-259126cffda1"
         },
-
     {
         "type": "hysteria2",
         "tag": "hy2-test",
