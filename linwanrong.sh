@@ -126,6 +126,7 @@ defaultIptables() {
 	iptables -t mangle -X
 	iptables -t raw -F
 	iptables -t raw -X
+ 	iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	iptables -P INPUT DROP
 	iptables -P OUTPUT ACCEPT
 	iptables -P FORWARD DROP
@@ -136,7 +137,7 @@ defaultIptables() {
 	iptables -A INPUT -i lo -j ACCEPT
  	apt install netfilter-persistent
 	netfilter-persistent save
-	red "开启默认端口信息"
+	red "已开启默认端口信息"
 	iptables -L
 }
 installsingbox() {
