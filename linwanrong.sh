@@ -56,8 +56,8 @@ else
     bbr="Openvz/Lxc"
 fi
 hostname=$(hostname)
-country=$(curl -s ipinfo.io/json)
-# country="US"
+# country=$(curl -s ipinfo.io/json)
+country
 
 
 
@@ -72,7 +72,6 @@ setshortcut() {
   rm -rf /usr/bin/linwanrong
   curl -L -o /usr/bin/linwanrong --retry 2 --insecure $url
   chmod +x /usr/bin/linwanrong
-  exit
 }
 
 update() {
@@ -89,7 +88,7 @@ update() {
 }
 
 # 参数 singbox on/off
-singbox() {
+singboxport() {
   clear
   white "----------------------------------"
   green " 1. 开放端口"
@@ -109,7 +108,7 @@ singbox() {
       iptables -D INPUT -p udp --dport 44502:44540 -j ACCEPT
       ;;
     0 ) 
-      sleep 2 && linwanrong
+      sleep 1 && linwanrong
       ;;
     * )
       red "无效输入"
@@ -119,26 +118,47 @@ singbox() {
 
 defaultIptables() {
 	iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  iptables -F
+  iptables -X
+  iptables -t nat -F
+  iptables -t nat -X
+  iptables -t mangle -F
+  iptables -t mangle -X
+  iptables -t raw -F
+  iptables -t raw -X
+  iptables -P INPUT DROP
+	iptables -P OUTPUT ACCEPT
+	iptables -P FORWARD DROP
 	iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 	iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 	iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 	iptables -A INPUT -p icmp -j ACCEPT
 	iptables -A INPUT -i lo -j ACCEPT
-	iptables -P INPUT DROP
-	iptables -P OUTPUT ACCEPT
-	iptables -P FORWARD DROP
 	netfilter-persistent save
 	red "开启默认端口信息"
 	iptables -L
+}
+installsingbox() {
+  setshortcut
+  clear
+  bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/sing-box-yg/main/sb.sh)
+  exit
+}
+installdocker() {
+  curl -fsSL https://get.docker.com | sh
+  exit
 }
 main() {
   clear
   red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   white "脚本快捷方式：linwanrong"
   white "----------------------------------------------------------------------------------"
-  green " 01. singbox"
-  green " 02. 配置默认iptables"
-
+  green " 01. 安装singbox"
+  green " 02. singbox 端口"
+  white "----------------------------------------------------------------------------------"
+  green " 03. 安装 docker"
+  white "----------------------------------------------------------------------------------"
+  green " 04. 配置默认iptables"
   white "----------------------------------------------------------------------------------"
   green " 00. update"
   green " 0. exit"
@@ -146,8 +166,10 @@ main() {
 
   readp "输入数字：" Input
   case "$Input" in
-    01 ) singbox ;;
-    02 ) defaultIptables ;;
+    01 ) installsingbox ;;
+    02 ) singboxport ;;
+    03 ) installdocker ;;
+    04 ) defaultIptables ;;
     00 ) update ;;
     0 ) exit ;;
     * ) red "无效输入"
