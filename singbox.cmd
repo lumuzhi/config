@@ -165,6 +165,7 @@ if "!country!"=="CN" (
 
 if exist new.cmd (
     unix2dos.exe new.cmd new.cmd
+    echo !updateversion! > version
 )
 
 REM 更新脚本
