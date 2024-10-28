@@ -155,6 +155,7 @@ if "!country!"=="CN" (
 REM 更新脚本
 if not exist end.cmd (
     echo @echo off > end.cmd
+    echo "chcp 65001 > nul" >> end.cmd
     echo "timeout /t 1 > nul" >> end.cmd
     echo "del singbox.cmd > nul" >> end.cmd
     echo "move /y new.cmd %filePath% > nul" >> end.cmd
