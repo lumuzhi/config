@@ -48,9 +48,8 @@ for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ip
 cls
 if not exist SFW.exe (
 	if "!country!"=="CN" (
-	    cd %USERPROFILE%
-	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'") else (
-	    cd %USERPROFILE%
+	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
+	) else (
 	    powershell -command "Invoke-WebRequest -Uri 'https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
 	)
 
@@ -96,9 +95,8 @@ for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ip
 cls
 if not exist sing-box.exe (
 	if "!country!"=="CN" (
-	    cd %USERPROFILE%
-	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'") else (
-	    cd %USERPROFILE%
+	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
+	) else (
 	    powershell -command "Invoke-WebRequest -Uri 'https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
 	)
 
@@ -142,9 +140,8 @@ set filePath=singbox.cmd
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
 cls
 if "!country!"=="CN" (
-	cd %USERPROFILE%
-	powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'") else (
-	cd %USERPROFILE%
+	powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'"
+) else (
 	powershell -command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'"
 )
 move /y temp.cmd %filePath% > nul
