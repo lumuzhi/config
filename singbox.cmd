@@ -10,9 +10,14 @@ set singbox_url=https://github.com/SagerNet/sing-box/releases/download/v1.10.1/s
 set version_url=https://raw.githubusercontent.com/lumuzhi/config/main/version
 set update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd
 
-set version=
-for /f "delims=" %%i in (version) do (
-	set version=%%i
+if not exist version (
+    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
+    echo !updateversion! > version
+) else (
+    set version=
+    for /f "delims=" %%i in (version) do (
+        set version=%%i
+    )
 )
 
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
