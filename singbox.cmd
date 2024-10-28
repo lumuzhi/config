@@ -13,7 +13,7 @@ set unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe
 if not exist country (
     :: 使用PowerShell获取国家信息
     for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
-    echo !country! > country
+    echo !country!>country
 ) else (
     set country=
     for /f "delims=" %%i in (country) do (
@@ -22,7 +22,7 @@ if not exist country (
 )
 if not exist version (
     for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
-    echo !updateversion! > version
+    echo !updateversion!>version
 ) else (
     set version=
     for /f "delims=" %%i in (version) do (
@@ -86,9 +86,6 @@ if not exist SFW.exe (
         goto exitscript
     )
 )
-
-pause
-exit
 
 :: 定义 URL 和文件路径
 set url=https://sbox.linwanrong.com/sfw
@@ -179,7 +176,7 @@ if "!country!"=="CN" (
 
 if exist new.cmd (
     unix2dos.exe new.cmd new.cmd
-    echo !updateversion! > version
+    echo !updateversion!>version
 )
 
 REM 更新脚本
