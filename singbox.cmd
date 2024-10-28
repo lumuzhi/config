@@ -145,10 +145,9 @@ if "!country!"=="CN" (
 	powershell -command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'"
 )
 move /y temp.cmd %filePath% > nul
-move /y !updateversion! version > nul
+echo %updateversion% > version
 echo 更新成功
 pause
-exit
 
 :exitscript
 pause
