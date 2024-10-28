@@ -4,27 +4,42 @@ setlocal enabledelayedexpansion
 :: 设置代码页为UTF (65001)
 chcp 65001 > nul
 
+set proxy=https://ghp.ci/
+set sfw_url=https://github.com/lumuzhi/config/blob/main/sfw.zip
+set singbox_url=https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip
+set version_url=https://raw.githubusercontent.com/lumuzhi/config/main/version
+set update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd
 
 set version=
 for /f "delims=" %%i in (version) do (
 	set version=%%i
 )
 
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/version'"') do set updateversion=%%a
-if %updateversion% gtr %version% (
+for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
+if !updateversion! gtr %version% (
 	echo 脚本已更新至版本：!updateversion!，选择3进行更新
 )
 
+if not exist country (
+    :: 使用PowerShell获取国家信息
+    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
+    echo !country! > country
+) else (
+    set country=
+    for /f "delims=" %%i in (country) do (
+        set country=%%i
+    )
+)
 
 :menu
-echo ----------------------当前版本：!version!----------------------------
+echo ----------------------当前版本：%version%-----------------------------
 echo 全局代理：tun模式
 echo 本地代理：支持http，socks
-echo --------------------------------------------------
+echo ---------------------------------------------------------------------
 echo note: 
 echo 1.建议选择本地代理
 echo 2.网页打开慢？，重新运行脚本更新配置文件 3.如果写入较慢，关闭窗口，删掉生成的文件重新运行
-echo --------------------------------------------------
+echo ---------------------------------------------------------------------
 @REM cls
 echo.
 echo 1. 全局代理
@@ -42,15 +57,11 @@ if /i "%choice%"=="3" goto updatescript
 if /i "%choice%"=="0" goto exitscript
 
 :tunmode
-:: 使用PowerShell获取国家信息
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
-
-cls
 if not exist SFW.exe (
 	if "!country!"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%sfw_url%' -OutFile 'sfw.zip'"
 	) else (
-	    powershell -command "Invoke-WebRequest -Uri 'https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%sfw_url%' -OutFile 'sfw.zip'"
 	)
 
 	tar -xf sfw.zip
@@ -89,15 +100,12 @@ powershell -Command "Start-Process SFW -Verb RunAs"
 exit
 
 :localmode
-:: 使用PowerShell获取国家信息
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
-
 cls
 if not exist sing-box.exe (
 	if "!country!"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%singbox_url%' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
 	) else (
-	    powershell -command "Invoke-WebRequest -Uri 'https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%singbox_url%' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
 	)
 
 	tar -xf sing-box-1.10.1-windows-amd64.zip
@@ -137,16 +145,21 @@ sing-box.exe run
 
 :updatescript
 set filePath=singbox.cmd
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
 cls
 if "!country!"=="CN" (
-	powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'new.cmd'"
+	powershell -command "Invoke-WebRequest -Uri '%proxy%%update_url%' -OutFile 'new.cmd'"
 ) else (
-	powershell -command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'new.cmd'"
+	powershell -command "Invoke-WebRequest -Uri '%update_url%' -OutFile 'new.cmd'"
 )
-move /y temp.cmd %filePath% > nul
+
+REM 更新脚本
+if exist %filePath% (
+    move /y %filePath% %filePath%.bak > nul
+)
+move /y new.cmd %filePath% > nul
+
 echo %updateversion% > version
-echo 更新成功，手动删除singbox.cmd，重命名new.cmd为singbox.cmd
+echo 更新成功
 pause
 
 :exitscript
