@@ -68,18 +68,27 @@ if /i "%choice%"=="3" goto updatescript
 if /i "%choice%"=="0" goto exitscript
 
 :tunmode
+cls
 if not exist SFW.exe (
-	if "!country!"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri '%proxy%%sfw_url%' -OutFile 'sfw.zip'"
+    echo 准备下载sfw.zip
+	if "%country%"=="CN" (
+	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
 	) else (
 	    powershell -command "Invoke-WebRequest -Uri '%sfw_url%' -OutFile 'sfw.zip'"
 	)
-
-	tar -xf sfw.zip
-	@REM move sing-box-1.10.1-windows-amd64\sing-box.exe .\
-	@REM rmdir /s /q sing-box-1.10.1-windows-amd64
-	del sfw.zip
+    if exist sfw.zip (
+        tar -xf sfw.zip
+        @REM move sing-box-1.10.1-windows-amd64\sing-box.exe .\
+        @REM rmdir /s /q sing-box-1.10.1-windows-amd64
+        del sfw.zip
+    ) else (
+        echo sfw.zip下载失败
+        goto exitscript
+    )
 )
+
+pause
+exit
 
 :: 定义 URL 和文件路径
 set url=https://sbox.linwanrong.com/sfw
@@ -113,16 +122,21 @@ exit
 :localmode
 cls
 if not exist sing-box.exe (
+    echo 准备下载singbox
 	if "!country!"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri '%proxy%%singbox_url%' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%singbox_url%' -OutFile 'sing-box.zip'"
 	) else (
-	    powershell -command "Invoke-WebRequest -Uri '%singbox_url%' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
+	    powershell -command "Invoke-WebRequest -Uri '%singbox_url%' -OutFile 'sing-box.zip'"
 	)
-
-	tar -xf sing-box-1.10.1-windows-amd64.zip
-	move sing-box-1.10.1-windows-amd64\sing-box.exe .\ > nul
-	rmdir /s /q sing-box-1.10.1-windows-amd64
-	del *.zip
+    if exist sing-box.zip (
+        tar -xf sing-box.zip
+        move sing-box\sing-box.exe .\ > nul
+        rmdir /s /q sing-box
+        del *.zip
+    ) else (
+        echo singbox下载失败
+        goto exitscript
+    )
 )
 
 :: 定义 URL 和文件路径
