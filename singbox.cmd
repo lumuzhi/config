@@ -150,58 +150,11 @@ if "!country!"=="CN" (
 move /y temp.cmd %filePath% > nul
 move /y !updateversion! version > nul
 echo 更新成功
-goto menu
+pause
+exit
 
 :exitscript
 pause
 exit
-
-
-@REM :sh_download
-@REM :: 使用PowerShell获取国家信息
-@REM for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
-
-@REM :: 检查是否是中国
-@REM if not exist sing-box.exe (
-@REM 	if "!country!"=="CN" (
-@REM 	    cd %USERPROFILE%
-@REM 	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'") else (
-@REM 	    cd %USERPROFILE%
-@REM 	    powershell -command "Invoke-WebRequest -Uri 'https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip' -OutFile 'sing-box-1.10.1-windows-amd64.zip'"
-@REM 	)
-
-@REM 	tar -xf sing-box-1.10.1-windows-amd64.zip
-@REM 	move sing-box-1.10.1-windows-amd64\sing-box.exe .\ > nul
-@REM 	rmdir /s /q sing-box-1.10.1-windows-amd64
-@REM 	del *.zip
-@REM )
-
-@REM :: 定义 URL 和文件路径
-@REM set url=https://sbox.linwanrong.com
-@REM set filePath=config.json
-
-@REM :: 使用 curl 获取 JSON 数据
-@REM curl -sL %url% > temp.json
-
-@REM :: 检查 curl 是否成功执行
-@REM if %errorlevel% neq 0 (
-@REM     echo 无法从服务器获取 JSON 数据。
-@REM     exit /b 1
-@REM )
-
-@REM :: 检查 JSON 数据是否为空
-@REM for /f "delims=" %%i in (temp.json) do set jsonContent=%%i
-
-@REM if not defined jsonContent (
-@REM     echo 没有从服务器获取到有效的 JSON 数据。
-@REM     del temp.json
-@REM     exit /b 1
-@REM )
-
-@REM :: 将 JSON 数据写入 config.json
-@REM move /y temp.json %filePath% > nul
-
-@REM :: 执行 singbox run 命令
-@REM sing-box.exe run
 
 endlocal
