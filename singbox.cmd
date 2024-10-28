@@ -1,5 +1,4 @@
 @echo off
-setlocal
 setlocal enabledelayedexpansion
 :: 设置代码页为UTF (65001)
 chcp 65001 > nul
@@ -9,7 +8,18 @@ set sfw_url=https://github.com/lumuzhi/config/blob/main/sfw.zip
 set singbox_url=https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip
 set version_url=https://raw.githubusercontent.com/lumuzhi/config/main/version
 set update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd
+set unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe
 
+if not exist country (
+    :: 使用PowerShell获取国家信息
+    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
+    echo !country! > country
+) else (
+    set country=
+    for /f "delims=" %%i in (country) do (
+        set country=%%i
+    )
+)
 if not exist version (
     for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
     echo !updateversion! > version
@@ -25,26 +35,22 @@ if !updateversion! gtr %version% (
 	echo 脚本已更新至版本：!updateversion!，选择3进行更新
 )
 
-if not exist country (
-    :: 使用PowerShell获取国家信息
-    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
-    echo !country! > country
-) else (
-    set country=
-    for /f "delims=" %%i in (country) do (
-        set country=%%i
-    )
+if not exist unix2dos.exe (
+    if "!country!"=="CN" (
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%unix2dos_url%' -OutFile 'unix2dos.exe'"
+	) else (
+	    powershell -command "Invoke-WebRequest -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe'"
+	)
 )
-
 :menu
-echo ----------------------当前版本：%version%-----------------------------
+echo ----------------------当前版本：%version% (仅支持window)-----------------------------
 echo 全局代理：tun模式
 echo 本地代理：支持http，socks
-echo ---------------------------------------------------------------------
+echo -----------------------------------------------------------------------------------
 echo note: 
 echo 1.建议选择本地代理
 echo 2.网页打开慢？，重新运行脚本更新配置文件 3.如果写入较慢，关闭窗口，删掉生成的文件重新运行
-echo ---------------------------------------------------------------------
+echo -----------------------------------------------------------------------------------
 @REM cls
 echo.
 echo 1. 全局代理
@@ -155,6 +161,10 @@ if "!country!"=="CN" (
 	powershell -command "Invoke-WebRequest -Uri '%proxy%%update_url%' -OutFile 'new.cmd'"
 ) else (
 	powershell -command "Invoke-WebRequest -Uri '%update_url%' -OutFile 'new.cmd'"
+)
+
+if exist new.cmd (
+    unix2dos.exe new.cmd new.cmd
 )
 
 REM 更新脚本
