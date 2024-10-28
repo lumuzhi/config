@@ -140,13 +140,13 @@ set filePath=singbox.cmd
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
 cls
 if "!country!"=="CN" (
-	powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'"
+	powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'new.cmd'"
 ) else (
-	powershell -command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'temp.cmd'"
+	powershell -command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd' -OutFile 'new.cmd'"
 )
 move /y temp.cmd %filePath% > nul
 echo %updateversion% > version
-echo 更新成功
+echo 更新成功，手动删除singbox.cmd，重命名new.cmd为singbox.cmd
 pause
 
 :exitscript
