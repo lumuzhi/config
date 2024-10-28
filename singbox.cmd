@@ -3,17 +3,19 @@ setlocal enabledelayedexpansion
 :: 设置代码页为UTF (65001)
 chcp 65001 > nul
 
-set proxy=https://ghp.ci/
+set proxy=https://gh.kejilion.pro/
 set sfw_url=https://github.com/lumuzhi/config/blob/main/sfw.zip
 set singbox_url=https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip
 set version_url=https://raw.githubusercontent.com/lumuzhi/config/main/version
 set update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd
 set unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe
 
+
 if not exist country (
     :: 使用PowerShell获取国家信息
     for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do set country=%%a
     echo !country!>country
+    echo 创建country文件成功
 ) else (
     set country=
     for /f "delims=" %%i in (country) do (
@@ -21,34 +23,35 @@ if not exist country (
     )
 )
 if not exist version (
-    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
-    echo !updateversion!>version
+    if "!country!"=="CN" (
+        echo CN
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%version_url%' -OutFile 'version'"
+	) else (
+        echo US
+	    powershell -command "Invoke-WebRequest -Uri '%version_url%' -OutFile 'version'"
+	)
+    echo 创建version文件成功
 ) else (
     set version=
     for /f "delims=" %%i in (version) do (
         set version=%%i
     )
 )
-
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
-if !updateversion! gtr %version% (
-	echo 脚本已更新至版本：!updateversion!，选择3进行更新
+if exist version (
+    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '%proxy%%version_url%'"') do set updateversion=%%a
+    if !updateversion! gtr !version! (
+        echo 脚本已更新至版本：!updateversion!，选择3进行更新
+    )
 )
 
-if not exist unix2dos.exe (
-    if "!country!"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri '%proxy%%unix2dos_url%' -OutFile 'unix2dos.exe'"
-	) else (
-	    powershell -command "Invoke-WebRequest -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe'"
-	)
-)
+
 :menu
-echo ----------------------当前版本：%version% (仅支持window)-----------------------------
+echo ----------当前版本：%version% (仅支持window) %country%-----------------------------
 echo 全局代理：tun模式
 echo 本地代理：支持http，socks
 echo -----------------------------------------------------------------------------------
 echo note: 
-echo 1.建议选择本地代理
+echo 1.建议选择本地代理，不想动脑子的选择全局代理
 echo 2.网页打开慢？，重新运行脚本更新配置文件 3.如果写入较慢，关闭窗口，删掉生成的文件重新运行
 echo -----------------------------------------------------------------------------------
 @REM cls
@@ -69,15 +72,20 @@ if /i "%choice%"=="0" goto exitscript
 
 :tunmode
 cls
-if not exist SFW.exe (
-    echo 准备下载sfw.zip
+if not exist sfw/SFW.exe (
 	if "%country%"=="CN" (
-	    powershell -command "Invoke-WebRequest -Uri 'https://ghp.ci/https://github.com/lumuzhi/config/blob/main/sfw.zip' -OutFile 'sfw.zip'"
+        echo download form %proxy%%sfw_url%
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%sfw_url%' -OutFile 'sfw.zip'"
 	) else (
+        echo download form %sfw_url%
 	    powershell -command "Invoke-WebRequest -Uri '%sfw_url%' -OutFile 'sfw.zip'"
 	)
     if exist sfw.zip (
-        tar -xf sfw.zip
+        echo 下载sfw.zip成功
+        if not exist sfw (
+            mkdir sfw
+        )
+        tar -xf sfw.zip -C sfw
         @REM move sing-box-1.10.1-windows-amd64\sing-box.exe .\
         @REM rmdir /s /q sing-box-1.10.1-windows-amd64
         del sfw.zip
@@ -89,7 +97,7 @@ if not exist SFW.exe (
 
 :: 定义 URL 和文件路径
 set url=https://sbox.linwanrong.com/sfw
-set filePath=config.json
+set filePath=./sfw/config.json
 
 :: 使用 curl 获取 JSON 数据
 curl -sL %url% > temp.json
@@ -113,22 +121,30 @@ if not defined jsonContent (
 move /y temp.json %filePath% > nul
 
 :: 使用 PowerShell 启动 EXE 并以管理员权限运行
-powershell -Command "Start-Process SFW -Verb RunAs"
+cd sfw
+powershell -Command "Start-Process SFW.exe -Verb RunAs"
+
 exit
 
 :localmode
 cls
-if not exist sing-box.exe (
+if not exist sb\sing-box.exe (
     echo 准备下载singbox
 	if "!country!"=="CN" (
+        echo download form %proxy%%singbox_url%
 	    powershell -command "Invoke-WebRequest -Uri '%proxy%%singbox_url%' -OutFile 'sing-box.zip'"
 	) else (
+        echo download form %singbox_url%
 	    powershell -command "Invoke-WebRequest -Uri '%singbox_url%' -OutFile 'sing-box.zip'"
 	)
     if exist sing-box.zip (
-        tar -xf sing-box.zip
-        move sing-box\sing-box.exe .\ > nul
-        rmdir /s /q sing-box
+        if not exist sb (
+            mkdir sb
+        )
+        tar -xf sing-box.zip -C sb
+        move sb\sing-box-* sb\sing-box > nul
+        move sb\sing-box\sing-box.exe sb > nul
+        rmdir /s /q sb\sing-box
         del *.zip
     ) else (
         echo singbox下载失败
@@ -138,7 +154,7 @@ if not exist sing-box.exe (
 
 :: 定义 URL 和文件路径
 set url=https://sbox.linwanrong.com
-set filePath=config.json
+set filePath=sb/config.json
 
 :: 使用 curl 获取 JSON 数据
 curl -sL %url% > temp.json
@@ -162,12 +178,24 @@ if not defined jsonContent (
 move /y temp.json %filePath% > nul
 
 :: 执行 singbox run 命令
+cls
+cd sb
 sing-box.exe run
+
+exit
 
 
 :updatescript
-set filePath=singbox.cmd
 cls
+set filePath=singbox.cmd
+if not exist unix2dos.exe (
+    if "!country!"=="CN" (
+	    powershell -command "Invoke-WebRequest -Uri '%proxy%%unix2dos_url%' -OutFile 'unix2dos.exe'"
+	) else (
+	    powershell -command "Invoke-WebRequest -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe'"
+	)
+    echo unix2dos.exe下载成功
+)
 if "!country!"=="CN" (
 	powershell -command "Invoke-WebRequest -Uri '%proxy%%update_url%' -OutFile 'new.cmd'"
 ) else (
