@@ -22,7 +22,9 @@ if "!country!"=="CN" (
 )
 
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
-powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
+if not exist unix2dos.exe (
+    powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
+)
 curl -sL %update_url% > singbox.cmd
 unix2dos.exe singbox.cmd singbox.cmd
 
@@ -35,6 +37,6 @@ for /f "tokens=1,* delims==" %%a in (config) do (
     del config
     ren temp config
 )
-start "" "singbox.cmd"
+
 exit
 endlocal
