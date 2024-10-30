@@ -35,6 +35,6 @@ for /f "tokens=1,* delims==" %%a in (config) do (
     del config
     ren temp config
 )
-
+start "" "singbox.cmd"
 exit
 endlocal
