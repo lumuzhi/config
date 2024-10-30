@@ -5,12 +5,12 @@ chcp 65001 > nul
 color 02
 
 :: 检查是否以管理员权限运行
-@REM net session >nul 2>&1
-@REM if %errorlevel% neq 0 (
-@REM     echo 请以管理员权限运行此脚本。
-@REM     pause
-@REM     exit /b
-@REM )
+:: net session >nul 2>&1
+:: if %errorlevel% neq 0 (
+::     echo 请以管理员权限运行此脚本。
+::     pause
+::     exit /b
+:: )
 
 
 set "proxy=https://ghp.ci/"
@@ -34,12 +34,16 @@ if exist update.cmd (
     del update.cmd
 )
 if not exist !configFile! (
-    :: 不存在config配置文件，curl获取国家代码，版本号默认1
-    @REM 输出默认配置文件
-    echo version=1>>%configFile%
-    for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do echo country=%%a>%configFile%
-
+    :: 输出默认配置文件
+    echo version=^1>%configFile%
+    for /f "delims=" %%a in ('powershell -command "try { $result = Invoke-RestMethod -Uri 'https://ipget.net/country'; if ($result -match '^[A-Z]{2}$') { $result } else { 'CN' } } catch { 'CN' }"') do (
+        set country=%%a
+    )
 )
+if not defined country (
+    set "country=CN"
+)
+echo country=!country!>>%configFile%
 call :getConfigInfo
 
 if "!country!"=="CN" (
@@ -53,14 +57,14 @@ if "!country!"=="CN" (
 )
 :: 获取最新的版本号
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
-@REM echo %mypath% | findstr /C:"%curr_dir%" > nul
-@REM if %errorlevel% neq 0 (
-@REM     echo 首次安装设置环境
-@REM     setx PATH "%mypath%;%curr_dir%"
-@REM     echo 关闭该窗口重新打开
-@REM     pause
-@REM     exit
-@REM )
+:: echo %mypath% | findstr /C:"%curr_dir%" > nul
+:: if %errorlevel% neq 0 (
+::     echo 首次安装设置环境
+::     setx PATH "%mypath%;%curr_dir%"
+::     echo 关闭该窗口重新打开
+::     pause
+::     exit
+:: )
 
 
 
@@ -123,26 +127,26 @@ if not exist sb (
     if not exist sb\singbox.zip (
         echo singbox.zip下载失败
         pause
-        exit /b
+        exit
     )
     tar -xf sb\singbox.zip -C sb
     move sb\sing-box-* sb\sing-box > nul
     move sb\sing-box\sing-box.exe sb > nul
     rmdir /s /q sb\sing-box
-    del sfw\sfw.zip
+    del sb\singbox.zip
 )
-@REM call :createConfig "https://sbox.linwanrong.com"
+:: call :createConfig "https://sbox.linwanrong.com"
 
 curl -sL "https://sbox.linwanrong.com" > sb\config.json
-start cmd /k "%curr_dir%\sb\sing-box.exe run -c %curr_dir\sb\config.json%"
-@REM sb\sing-box.exe run -c sb\config.json
+start cmd.exe /k "cd /d %curr_dir%\sb && sing-box.exe run"
+:: sb\sing-box.exe run -c sb\config.json
 exit
 
 
 
 :update
 cls
-@REM powershell -command "Invoke-RestMethod -Uri '!update!'" -OutFile update.cmd
+:: powershell -command "Invoke-RestMethod -Uri '!update!'" -OutFile update.cmd
 powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%update_script%' -OutFile 'update.cmd' } Catch { Write-Host '更新脚本下载失败: $_' }"
 if not exist unix2dos.exe (
     powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
