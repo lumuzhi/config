@@ -111,12 +111,12 @@ if not exist sfw (
         pause
         exit /b
     )
-    tar -xf sfw\sfw.zip
+    tar -xf sfw\sfw.zip -C sfw
     del sfw\sfw.zip
 )
 curl -sL "https://sbox.linwanrong.com/sfw" > sfw\config.json
-cd sfw
-powershell -Command "Start-Process SFW.exe -Verb RunAs"
+start cmd /k "cd /d "%curr_dir%\sfw" && powershell -Command "Start-Process 'SFW.exe' -Verb RunAs" && exit"
+exit
 
 
 :localMode
@@ -168,6 +168,5 @@ if %errorlevel% neq 0 (
     exit /b
 )
 goto :EOF
-
 
 
