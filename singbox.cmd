@@ -23,7 +23,7 @@ set "unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe"
 set "v=https://raw.githubusercontent.com/lumuzhi/config/main/v"
 
 set "localVersion="
-set "country="
+set "country=CN"
 set "remoteVersion="
 set "configFile=.ini"
 set "curr_dir=%CD%"
@@ -37,13 +37,9 @@ if not exist !configFile! (
     :: 输出默认配置文件
     echo version=^1>%configFile%
     for /f "delims=" %%a in ('powershell -command "try { $result = Invoke-RestMethod -Uri 'https://ipget.net/country'; if ($result -match '^[A-Z]{2}$') { $result } else { 'CN' } } catch { 'CN' }"') do (
-        set country=%%a
+        echo country=%%a>>%configFile%
     )
 )
-if not defined country (
-    set "country=CN"
-)
-echo country=!country!>>%configFile%
 call :getConfigInfo
 
 if "!country!"=="CN" (
