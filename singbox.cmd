@@ -25,7 +25,7 @@ set "v=https://raw.githubusercontent.com/lumuzhi/config/main/v"
 set "localVersion="
 set "country="
 set "remoteVersion="
-set configFile=config
+set "configFile=.ini"
 set "curr_dir=%CD%"
 set "mypath=%PATH%"
 
