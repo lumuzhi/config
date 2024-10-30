@@ -11,8 +11,11 @@ set "update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cm
 set "unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe"
 
 for /f "tokens=1,2 delims==" %%a in (config) do (
+    if "%%a"=="version" set "version=%%b"
     if "%%a"=="country" set "country=%%b"
 )
+echo version=!version!
+echo country=!country!
 
 if "!country!"=="CN" (
     set "version_url=%proxy%%version_url%"
@@ -22,6 +25,7 @@ if "!country!"=="CN" (
 )
 
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
+echo remoteVersion=!remoteVersion!
 if not exist unix2dos.exe (
     powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
 )
@@ -34,9 +38,10 @@ for /f "tokens=1,* delims==" %%a in (config) do (
     ) else (
         echo %%a=%%b>>temp
     )
-    del config
-    ren temp config
 )
+del config
+ren temp config
+start "" "singbox.cmd"
 
 exit
 endlocal
