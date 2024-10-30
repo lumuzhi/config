@@ -26,7 +26,18 @@ for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_
 if not exist unix2dos.exe (
     powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
 )
-curl -sL %update_url% > singbox.cmd
+curl -sL %update_url% > temp.cmd
+if %errorlevel% neq 0 (
+    echo 获取脚本内容失败
+    exit
+)
+for /f "delims=" %%i in (temp.cmd) do set content=%%i
+if not defined content (
+    echo 无效的更新数据
+    exit
+)
+move /y temp.cmd singbox.cmd > nul
+:: curl -sL %update_url% > singbox.cmd
 unix2dos.exe singbox.cmd singbox.cmd
 
 for /f "tokens=1,* delims==" %%a in (%configFile%) do (
