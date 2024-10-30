@@ -18,6 +18,7 @@ set "sfw_url=https://github.com/lumuzhi/config/blob/main/sfw.zip"
 set "singbox_url=https://github.com/SagerNet/sing-box/releases/download/v1.10.1/sing-box-1.10.1-windows-amd64.zip"
 set "version_url=https://raw.githubusercontent.com/lumuzhi/config/main/version"
 set "update_url=https://raw.githubusercontent.com/lumuzhi/config/main/singbox.cmd"
+set "update_script=https://raw.githubusercontent.com/lumuzhi/config/main/update.cmd"
 set "unix2dos_url=https://github.com/lumuzhi/config/blob/main/unix2dos.exe"
 set "v=https://raw.githubusercontent.com/lumuzhi/config/main/v"
 
@@ -39,8 +40,6 @@ if not exist !configFile! (
     for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'http://ipinfo.io/country'"') do echo country=%%a>%configFile%
 
 )
-:: 获取最新的版本号
-for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
 call :getConfigInfo
 
 if "!country!"=="CN" (
@@ -48,10 +47,12 @@ if "!country!"=="CN" (
     set "singbox_url=%proxy%%singbox_url%"
     set "version_url=%proxy%%version_url%"
     set "update_url=%proxy%%update_url%"
+    set "update_script=%proxy%%update_script%"
     set "unix2dos_url=%proxy%%unix2dos_url%"
     set "v=%proxy%%v%"
 )
-
+:: 获取最新的版本号
+for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
 @REM echo %mypath% | findstr /C:"%curr_dir%" > nul
 @REM if %errorlevel% neq 0 (
 @REM     echo 首次安装设置环境
@@ -140,10 +141,13 @@ exit
 
 
 :update
-echo @echo off > update.cmd
-echo curl -sL "!update_url!" ^> singbox.cmd >> update.cmd
-echo start "" "singbox.cmd" >> update.cmd
-echo exit >> update.cmd
+cls
+@REM powershell -command "Invoke-RestMethod -Uri '!update!'" -OutFile update.cmd
+powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%update_script%' -OutFile 'update.cmd' } Catch { Write-Host '更新脚本下载失败: $_' }"
+if not exist unix2dos.exe (
+    powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
+)
+unix2dos.exe update.cmd update.cmd
 start "" "update.cmd"
 exit
 
