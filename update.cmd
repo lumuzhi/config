@@ -14,8 +14,6 @@ for /f "tokens=1,2 delims==" %%a in (config) do (
     if "%%a"=="version" set "version=%%b"
     if "%%a"=="country" set "country=%%b"
 )
-echo version=!version!
-echo country=!country!
 
 if "!country!"=="CN" (
     set "version_url=%proxy%%version_url%"
@@ -25,7 +23,7 @@ if "!country!"=="CN" (
 )
 
 for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri '!version_url!'"') do set "remoteVersion=%%a"
-echo remoteVersion=!remoteVersion!
+
 if not exist unix2dos.exe (
     powershell -NoProfile -Command "Try { Invoke-RestMethod -Uri '%unix2dos_url%' -OutFile 'unix2dos.exe' } Catch { Write-Host 'unix2dos下载失败: $_' }"
 )
