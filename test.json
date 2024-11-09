@@ -385,293 +385,6 @@
       "default": "auto",
       "outbounds": [
         "auto",
-        "vless-ubuntu",
-        "vmess-ubuntu",
-        "hy2-ubuntu",
-        "tuic5-ubuntu"
-      ]
-    },
-    {
-      "type": "vless",
-      "tag": "vless-ubuntu",
-      "server": "168.138.11.8",
-      "server_port": 44500,
-      "uuid": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e",
-      "packet_encoding": "xudp",
-      "flow": "xtls-rprx-vision",
-      "tls": {
-        "enabled": true,
-        "server_name": "www.yahoo.com",
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-      "reality": {
-          "enabled": true,
-          "public_key": "LTalmsm7gK-77-coPdcMsLu5J2SHfWNqAod_MnSlx2s",
-          "short_id": "01e0378d"
-        }
-      }
-    },
-{
-            "server": "168.138.11.8",
-            "server_port": 44501,
-            "tag": "vmess-ubuntu",
-            "tls": {
-                "enabled": false,
-                "server_name": "www.bing.com",
-                "insecure": false,
-                "utls": {
-                    "enabled": true,
-                    "fingerprint": "chrome"
-                }
-            },
-            "packet_encoding": "packetaddr",
-            "transport": {
-                "headers": {
-                    "Host": [
-                        "www.bing.com"
-                    ]
-                },
-                "path": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e-vm",
-                "type": "ws"
-            },
-            "type": "vmess",
-            "security": "auto",
-            "uuid": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e"
-        },
-    {
-        "type": "hysteria2",
-        "tag": "hy2-ubuntu",
-        "server": "168.138.11.8",
-        "server_port": 44502,
-        "password": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e",
-        "tls": {
-            "enabled": true,
-            "server_name": "www.bing.com",
-            "insecure": true,
-            "alpn": [
-                "h3"
-            ]
-        }
-    },
-        {
-            "type":"tuic",
-            "tag": "tuic5-ubuntu",
-            "server": "168.138.11.8",
-            "server_port": 44503,
-            "uuid": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e",
-            "password": "07fa0136-9a56-4aa7-a0a1-720ec95c4f3e",
-            "congestion_control": "bbr",
-            "udp_relay_mode": "native",
-            "udp_over_stream": false,
-            "zero_rtt_handshake": false,
-            "heartbeat": "10s",
-            "tls":{
-                "enabled": true,
-                "server_name": "www.bing.com",
-                "insecure": true,
-                "alpn": [
-                    "h3"
-                ]
-            }
-        },
-    {
-      "tag": "direct",
-      "type": "direct"
-    },
-    {
-      "tag": "block",
-      "type": "block"
-    },
-    {
-      "tag": "dns-out",
-      "type": "dns"
-    },
-    {
-      "tag": "auto",
-      "type": "urltest",
-      "outbounds": [
-        "vless-ubuntu",
-        "vmess-ubuntu",
-        "hy2-ubuntu",
-        "tuic5-ubuntu"
-      ],
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "1m",
-      "tolerance": 50,
-      "interrupt_exist_connections": false
-    }
-  ],
-  "route": {
-      "rule_set": [
-            {
-                "tag": "geosite-geolocation-!cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
-                "download_detour": "select",
-                "update_interval": "1d"
-            },
-            {
-                "tag": "geosite-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.srs",
-                "download_detour": "select",
-                "update_interval": "1d"
-            },
-            {
-                "tag": "geoip-cn",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
-                "download_detour": "select",
-                "update_interval": "1d"
-            }
-        ],
-    "auto_detect_interface": true,
-    "final": "select",
-    "rules": [
-      {
-        "outbound": "dns-out",
-        "protocol": "dns"
-      },
-      {
-        "clash_mode": "Direct",
-        "outbound": "direct"
-      },
-      {
-        "clash_mode": "Global",
-        "outbound": "select"
-      },
-      {
-        "rule_set": "geoip-cn",
-        "outbound": "direct"
-      },
-      {
-        "rule_set": "geosite-cn",
-        "outbound": "direct"
-      },
-      {
-      "ip_is_private": true,
-      "outbound": "direct"
-      },
-      {
-        "rule_set": "geosite-geolocation-!cn",
-        "outbound": "select"
-      }
-    ]
-  },
-    "ntp": {
-    "enabled": true,
-    "server": "time.apple.com",
-    "server_port": 123,
-    "interval": "30m",
-    "detour": "direct"
-  }
-}
-
-{
-  "log": {
-    "disabled": false,
-    "level": "info",
-    "timestamp": true
-  },
-  "experimental": {
-    "clash_api": {
-      "external_controller": "127.0.0.1:9090",
-      "external_ui": "ui",
-      "external_ui_download_url": "",
-      "external_ui_download_detour": "",
-      "secret": "",
-      "default_mode": "Rule"
-       },
-      "cache_file": {
-            "enabled": true,
-            "path": "cache.db",
-            "store_fakeip": true
-        }
-    },
-    "dns": {
-        "servers": [
-            {
-                "tag": "proxydns",
-                "address": "tls://8.8.8.8/dns-query",
-                "detour": "select"
-            },
-            {
-                "tag": "localdns",
-                "address": "h3://223.5.5.5/dns-query",
-                "detour": "direct"
-            },
-            {
-                "address": "rcode://refused",
-                "tag": "block"
-            },
-            {
-                "tag": "dns_fakeip",
-                "address": "fakeip"
-            }
-        ],
-        "rules": [
-            {
-                "outbound": "any",
-                "server": "localdns",
-                "disable_cache": true
-            },
-            {
-                "clash_mode": "Global",
-                "server": "proxydns"
-            },
-            {
-                "clash_mode": "Direct",
-                "server": "localdns"
-            },
-            {
-                "rule_set": "geosite-cn",
-                "server": "localdns"
-            },
-            {
-                 "rule_set": "geosite-geolocation-!cn",
-                 "server": "proxydns"
-            },
-             {
-                "rule_set": "geosite-geolocation-!cn",         
-                "query_type": [
-                    "A",
-                    "AAAA"
-                ],
-                "server": "dns_fakeip"
-            }
-          ],
-           "fakeip": {
-           "enabled": true,
-           "inet4_range": "198.18.0.0/15",
-           "inet6_range": "fc00::/18"
-         },
-          "independent_cache": true,
-          "final": "proxydns"
-        },
-      "inbounds": [
-    {
-      "type": "tun",
-      "inet4_address": "172.19.0.1/30",
-      "inet6_address": "fd00::1/126",
-      "auto_route": true,
-      "strict_route": true,
-      "sniff": true,
-      "sniff_override_destination": true,
-      "domain_strategy": "prefer_ipv4"
-    }
-  ],
-  "outbounds": [
-    {
-      "tag": "select",
-      "type": "selector",
-      "default": "auto",
-      "outbounds": [
-        "auto",
         "vless-kr-two",
         "vmess-kr-two",
         "hy2-kr-two",
@@ -1070,6 +783,293 @@
         "vmess-test",
         "hy2-test",
         "tuic5-test"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "1m",
+      "tolerance": 50,
+      "interrupt_exist_connections": false
+    }
+  ],
+  "route": {
+      "rule_set": [
+            {
+                "tag": "geosite-geolocation-!cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-!cn.srs",
+                "download_detour": "select",
+                "update_interval": "1d"
+            },
+            {
+                "tag": "geosite-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geosite/geolocation-cn.srs",
+                "download_detour": "select",
+                "update_interval": "1d"
+            },
+            {
+                "tag": "geoip-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@sing/geo/geoip/cn.srs",
+                "download_detour": "select",
+                "update_interval": "1d"
+            }
+        ],
+    "auto_detect_interface": true,
+    "final": "select",
+    "rules": [
+      {
+        "outbound": "dns-out",
+        "protocol": "dns"
+      },
+      {
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "select"
+      },
+      {
+        "rule_set": "geoip-cn",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "outbound": "direct"
+      },
+      {
+      "ip_is_private": true,
+      "outbound": "direct"
+      },
+      {
+        "rule_set": "geosite-geolocation-!cn",
+        "outbound": "select"
+      }
+    ]
+  },
+    "ntp": {
+    "enabled": true,
+    "server": "time.apple.com",
+    "server_port": 123,
+    "interval": "30m",
+    "detour": "direct"
+  }
+}
+
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "timestamp": true
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090",
+      "external_ui": "ui",
+      "external_ui_download_url": "",
+      "external_ui_download_detour": "",
+      "secret": "",
+      "default_mode": "Rule"
+       },
+      "cache_file": {
+            "enabled": true,
+            "path": "cache.db",
+            "store_fakeip": true
+        }
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "proxydns",
+                "address": "tls://8.8.8.8/dns-query",
+                "detour": "select"
+            },
+            {
+                "tag": "localdns",
+                "address": "h3://223.5.5.5/dns-query",
+                "detour": "direct"
+            },
+            {
+                "address": "rcode://refused",
+                "tag": "block"
+            },
+            {
+                "tag": "dns_fakeip",
+                "address": "fakeip"
+            }
+        ],
+        "rules": [
+            {
+                "outbound": "any",
+                "server": "localdns",
+                "disable_cache": true
+            },
+            {
+                "clash_mode": "Global",
+                "server": "proxydns"
+            },
+            {
+                "clash_mode": "Direct",
+                "server": "localdns"
+            },
+            {
+                "rule_set": "geosite-cn",
+                "server": "localdns"
+            },
+            {
+                 "rule_set": "geosite-geolocation-!cn",
+                 "server": "proxydns"
+            },
+             {
+                "rule_set": "geosite-geolocation-!cn",         
+                "query_type": [
+                    "A",
+                    "AAAA"
+                ],
+                "server": "dns_fakeip"
+            }
+          ],
+           "fakeip": {
+           "enabled": true,
+           "inet4_range": "198.18.0.0/15",
+           "inet6_range": "fc00::/18"
+         },
+          "independent_cache": true,
+          "final": "proxydns"
+        },
+      "inbounds": [
+    {
+      "type": "tun",
+      "inet4_address": "172.19.0.1/30",
+      "inet6_address": "fd00::1/126",
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true,
+      "sniff_override_destination": true,
+      "domain_strategy": "prefer_ipv4"
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "select",
+      "type": "selector",
+      "default": "auto",
+      "outbounds": [
+        "auto",
+        "vless-instance-20241108-2348",
+        "vmess-instance-20241108-2348",
+        "hy2-instance-20241108-2348",
+        "tuic5-instance-20241108-2348"
+      ]
+    },
+    {
+      "type": "vless",
+      "tag": "vless-instance-20241108-2348",
+      "server": "158.179.24.22",
+      "server_port": 44500,
+      "uuid": "e9edaacc-8f6d-437b-a602-3b859469c69a",
+      "packet_encoding": "xudp",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.yahoo.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+      "reality": {
+          "enabled": true,
+          "public_key": "0dGKXk7_lkphRPHAYLJP0j04CIXRHx_xwD-MembMhXI",
+          "short_id": "f1143c16"
+        }
+      }
+    },
+{
+            "server": "158.179.24.22",
+            "server_port": 44501,
+            "tag": "vmess-instance-20241108-2348",
+            "tls": {
+                "enabled": false,
+                "server_name": "www.bing.com",
+                "insecure": false,
+                "utls": {
+                    "enabled": true,
+                    "fingerprint": "chrome"
+                }
+            },
+            "packet_encoding": "packetaddr",
+            "transport": {
+                "headers": {
+                    "Host": [
+                        "www.bing.com"
+                    ]
+                },
+                "path": "e9edaacc-8f6d-437b-a602-3b859469c69a-vm",
+                "type": "ws"
+            },
+            "type": "vmess",
+            "security": "auto",
+            "uuid": "e9edaacc-8f6d-437b-a602-3b859469c69a"
+        },
+    {
+        "type": "hysteria2",
+        "tag": "hy2-instance-20241108-2348",
+        "server": "158.179.24.22",
+        "server_port": 44502,
+        "password": "e9edaacc-8f6d-437b-a602-3b859469c69a",
+        "tls": {
+            "enabled": true,
+            "server_name": "www.bing.com",
+            "insecure": true,
+            "alpn": [
+                "h3"
+            ]
+        }
+    },
+        {
+            "type":"tuic",
+            "tag": "tuic5-instance-20241108-2348",
+            "server": "158.179.24.22",
+            "server_port": 44503,
+            "uuid": "e9edaacc-8f6d-437b-a602-3b859469c69a",
+            "password": "e9edaacc-8f6d-437b-a602-3b859469c69a",
+            "congestion_control": "bbr",
+            "udp_relay_mode": "native",
+            "udp_over_stream": false,
+            "zero_rtt_handshake": false,
+            "heartbeat": "10s",
+            "tls":{
+                "enabled": true,
+                "server_name": "www.bing.com",
+                "insecure": true,
+                "alpn": [
+                    "h3"
+                ]
+            }
+        },
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "block",
+      "type": "block"
+    },
+    {
+      "tag": "dns-out",
+      "type": "dns"
+    },
+    {
+      "tag": "auto",
+      "type": "urltest",
+      "outbounds": [
+        "vless-instance-20241108-2348",
+        "vmess-instance-20241108-2348",
+        "hy2-instance-20241108-2348",
+        "tuic5-instance-20241108-2348"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "1m",
