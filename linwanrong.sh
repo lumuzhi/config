@@ -248,11 +248,9 @@ main() {
   green " 2. singbox 端口"
   green " 3. 安装 sbjson 服务"
   white "----------------------------------------------------------------------------------"
-  green " 4. 指定端口"
-    white "----------------------------------------------------------------------------------"
-  green " 5. 安装 docker"
+  green " 4. 安装 docker"
   white "----------------------------------------------------------------------------------"
-  green " 6. 配置默认 iptables"
+  green " 5. 配置默认 iptables"
   white "----------------------------------------------------------------------------------"
   green " 9. update"
   green " 0. exit"
@@ -263,9 +261,8 @@ main() {
     1 ) installsingbox ;;
     2 ) singboxport ;;
     3 ) installsbjson ;;
-    4 ) port ;;
-    5 ) installdocker ;;
-    6 ) defaultIptables ;;
+    4 ) installdocker ;;
+    5 ) defaultIptables ;;
     9 ) update ;;
     0 ) exit ;;
     * ) red "无效输入"
