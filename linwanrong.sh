@@ -237,6 +237,7 @@ port() {
         iptables -D INPUT -p $1 --dport $2 -j ACCEPT
         iptables -L
         ;;
+       *) red "无效参数"
     esac
 }
 main() {
@@ -275,8 +276,9 @@ if [ "$#" -eq 0 ]; then
   main
 else
   case $1 in
-    port )
+    port)
       port "$@"
       ;;
+    *) exit
   esac
 fi
