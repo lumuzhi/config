@@ -224,16 +224,15 @@ EOF
 }
 # 指定端口
 port() {
+    echo $# $1
     case $1 in
       # 增加某个端口 port tcp/udp 端口号
       add)
-        shift
         iptables -I INPUT 1 -p $1 --dport $2 -j ACCEPT
         iptables -L
         ;;
       # 删除某个端口 port tcp/udp 端口号
       del)
-        shift
         iptables -D INPUT -p $1 --dport $2 -j ACCEPT
         iptables -L
         ;;
