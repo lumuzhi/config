@@ -57,7 +57,6 @@ else
 fi
 hostname=$(hostname)
 # country=$(curl -s ipinfo.io/json)
-country
 
 
 
@@ -150,29 +149,124 @@ installdocker() {
   curl -fsSL https://get.docker.com | sh
   exit
 }
+# 安装 sbjson 服务
+installsbjson() {
+    local file_path=/opt/sbjson/main.py  # 指定文件路径作为函数参数
+    if [ ! -f "$file_path" ]; then
+      mkdir -p /opt/sbjson
+      touch "$file_path"
+    fi
+    cat << 'EOF' > "$file_path"
+import json
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+# 定义一个请求处理类
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # 检查请求路径是否是根路径 "/"
+        if self.path == "/":
+            # 设置响应头
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+
+            # 读取文件内容
+            try:
+                with open(r'/etc/s-box/sing_box_client.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)  # 读取 JSON 数据
+                # 将 JSON 数据作为响应体返回
+                self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+            except Exception as e:
+                # 如果文件读取失败，则返回 500 错误
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(f"Error reading file: {str(e)}".encode('utf-8'))
+        else:
+            # 处理未知路径，返回 404 错误
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b"404 Not Found")
+
+# 设置服务器地址和端口
+server_address = ('', 44601)
+
+# 创建 HTTP 服务器
+httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+
+# print("Server started on port 3000...")
+httpd.serve_forever()
+EOF
+
+    # 给文件赋予可执行权限（可选）
+    chmod +x "$file_path"
+    if [ ! -f /etc/systemd/system/sbjson.service ]; then
+      touch /etc/systemd/system/sbjson.service
+    fi
+    cat << 'EOF' > /etc/systemd/system/sbjson.service
+[Unit]
+Description=Python Script Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/sbjson/main.py
+WorkingDirectory=/opt/sbjson
+Restart=always
+RestartSec=5
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    systemd enable sbjson.service
+    systemd start sbjson.service
+
+}
+# 指定端口
+port() {
+    case $1 in
+      # 增加某个端口 port tcp/udp 端口号
+      add)
+        shift
+        iptables -I INPUT 1 -p $1 --dport $2 -j ACCEPT
+        iptables -L
+        ;;
+      # 删除某个端口 port tcp/udp 端口号
+      del)
+        shift
+        iptables -D INPUT -p $1 --dport $2 -j ACCEPT
+        iptables -L
+        ;;
+    esac
+}
 main() {
   clear
   red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
   white "脚本快捷方式：linwanrong"
   white "----------------------------------------------------------------------------------"
-  green " 01. 安装singbox"
-  green " 02. singbox 端口"
+  green " 1. 安装 singbox"
+  green " 2. singbox 端口"
+  green " 3. 安装 sbjson 服务"
   white "----------------------------------------------------------------------------------"
-  green " 03. 安装 docker"
+  green " 4. 指定端口"
+    white "----------------------------------------------------------------------------------"
+  green " 5. 安装 docker"
   white "----------------------------------------------------------------------------------"
-  green " 04. 配置默认iptables"
+  green " 6. 配置默认 iptables"
   white "----------------------------------------------------------------------------------"
-  green " 00. update"
+  green " 9. update"
   green " 0. exit"
   red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
   readp "输入数字：" Input
   case "$Input" in
-    01 ) installsingbox ;;
-    02 ) singboxport ;;
-    03 ) installdocker ;;
-    04 ) defaultIptables ;;
-    00 ) update ;;
+    1 ) installsingbox ;;
+    2 ) singboxport ;;
+    3 ) installsbjson ;;
+    4 ) port ;;
+    5 ) installdocker ;;
+    6 ) defaultIptables ;;
+    9 ) update ;;
     0 ) exit ;;
     * ) red "无效输入"
   esac
@@ -182,4 +276,10 @@ main() {
 if [ "$#" -eq 0 ]; then
   # 如果没有参数，运行交互式
   main
+else
+  case $1 in
+    port )
+      port "$@"
+      ;;
+  esac
 fi
