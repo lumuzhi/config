@@ -218,8 +218,8 @@ Group=root
 [Install]
 WantedBy=multi-user.target
 EOF
-    systemd enable sbjson.service
-    systemd start sbjson.service
+    systemctl enable sbjson.service
+    systemctl start sbjson.service
 
 }
 # 指定端口
@@ -247,7 +247,7 @@ main() {
   white "----------------------------------------------------------------------------------"
   green " 1. 安装 singbox"
   green " 2. singbox 端口"
-  green " 3. 安装 sbjson 服务dddd"
+  green " 3. 安装 sbjson 服务"
   white "----------------------------------------------------------------------------------"
   green " 4. 安装 docker"
   white "----------------------------------------------------------------------------------"
