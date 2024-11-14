@@ -224,7 +224,7 @@ EOF
 }
 # 指定端口
 port() {
-    echo $# $1
+    echo $# $@
     case $1 in
       # 增加某个端口 port tcp/udp 端口号
       add)
@@ -276,6 +276,7 @@ if [ "$#" -eq 0 ]; then
 else
   case $1 in
     port)
+    echo $@
       port "$@"
       ;;
     *) exit
